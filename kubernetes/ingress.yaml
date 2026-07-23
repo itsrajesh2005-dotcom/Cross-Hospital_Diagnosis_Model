@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fl-platform-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/websocket-services: "fl-backend-service"
+spec:
+  rules:
+    - host: fl-hospital.consortium.org
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: fl-backend-service
+                port:
+                  number: 8000
+          - path: /ws
+            pathType: Prefix
+            backend:
+              service:
+                name: fl-backend-service
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fl-frontend-service
+                port:
+                  number: 80

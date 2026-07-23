@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fl-postgres
+spec:
+  serviceName: "fl-postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fl-postgres
+  template:
+    metadata:
+      labels:
+        app: fl-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_DB
+              value: cross_hospital_fl
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fl-postgres
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: fl-postgres

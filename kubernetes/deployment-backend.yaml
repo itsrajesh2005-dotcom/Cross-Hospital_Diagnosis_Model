@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fl-backend
+  namespace: default
+  labels:
+    app: fl-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fl-backend
+  template:
+    metadata:
+      labels:
+        app: fl-backend
+    spec:
+      containers:
+        - name: fl-backend
+          image: cross-hospital-fl/backend:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: POSTGRES_SERVER
+              value: "fl-postgres"
+            - name: POSTGRES_DB
+              value: "cross_hospital_fl"
+            - name: REDIS_HOST
+              value: "fl-redis"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fl-backend-service
+spec:
+  selector:
+    app: fl-backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP

@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0b1329;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2d54;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4;
+}
+
+.glass-card {
+  background: rgba(17, 28, 56, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 45, 84, 0.8);
+}
